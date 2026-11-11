@@ -1,2 +1,4 @@
 obj
-main.ia
+main.ld
+*.c
+a.out

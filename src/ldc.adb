@@ -1,9 +1,8 @@
 with Ada.Text_IO;
 with Ada.Command_Line;
 with Process;
-with Backend;
 
-procedure IA is
+procedure LDC is
    package TIO renames Ada.Text_IO;
    package CL renames Ada.Command_Line;
 
@@ -35,4 +34,4 @@ begin
          CL.Set_Exit_Status (CL.Failure);
       end if;
    end;
-end IA;
+end LDC;

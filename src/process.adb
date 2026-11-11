@@ -1,7 +1,7 @@
 with Ada.Text_IO;
 with Ada.Strings.Unbounded;
+with Logger;
 with Parser;
-with Backend;
 
 package body Process is
    function Compile (Filename : String) return Boolean is
@@ -16,8 +16,12 @@ package body Process is
       end if;
 
       Parser.Parse_Program (Prs);
-      Code := Backend.Emit_Assembly (Prs.Instructions);
-      Ada.Text_IO.Put_Line (SU.To_String (Code));
+
+      if Logger.Logged_Errors > 0 then
+         return False;
+      end if;
+
+      Ada.Text_IO.Put_Line (Ada.Strings.Unbounded.To_String (Prs.Code));
       return True;
    end Compile;
 end Process;

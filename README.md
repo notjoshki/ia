@@ -1,6 +1,20 @@
-# IA
+# LDC
 
-IA is a compiled assembly-like language for Linux x86_64.
+LDC is a transpiler for GNU linker script that generates C code.
+
+## Example
+
+Hello world:
+
+```ld
+ENTRY(.text);
+
+SECTIONS {
+    .text : {
+        ."Hello, world!\n";
+    }
+}
+```
 
 ## Installation
 
@@ -8,20 +22,20 @@ IA is a compiled assembly-like language for Linux x86_64.
 
 - gnat
 - gprbuild
-- nasm
+- gcc
 
 Simply clone the repository and run gprbuild:
 
 ```console
-$ git clone https://github.com/notjoshki/ia.git
-$ cd ia
+$ git clone https://github.com/notjoshki/ldc.git
+$ cd ldc
 $ gprbuild
 ```
 
 ## Usage
 
 ```
-./ia [options...] <file>
+./ldc [options...] <file>
 ```
 
 | Option | Description |
@@ -30,4 +44,4 @@ $ gprbuild
 
 ## License
 
-IA is distributed under the [BSD 3-Clause](./LICENSE) license.
+LDC is distributed under the [BSD 3-Clause](./LICENSE) license.

@@ -3,7 +3,7 @@ with Ada.Strings.Unbounded;
 with Ada.Characters.Handling;
 
 package Lexer is
-   type Token_Kind is (EOF, ID, Keyword, Int, Colon);
+   type Token_Kind is (EOF, ID, Keyword, Int, Str, Colon, LBrace, RBrace, Semicolon, Dot, LParen, RParen);
 
    type Token is record
       Kind : Token_Kind;
@@ -28,7 +28,9 @@ private
    package CH renames Ada.Characters.Handling;
 
    procedure Step (Lex : in out Lexer);
+   function Peek (Lex : Lexer; Offset : Integer) return Character;
    function Step_And_Create_Token (Lex : in out Lexer; Kind : Token_Kind; Step_Count : Positive := 1) return Token;
    function Lex_ID (Lex : in out Lexer) return Token;
    function Lex_Digit (Lex : in out Lexer) return Token;
+   function Lex_String (Lex : in out Lexer) return Token;
 end Lexer;
