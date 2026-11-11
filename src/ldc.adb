@@ -8,7 +8,7 @@ procedure LDC is
 
    procedure Show_Help is
    begin
-      TIO.Put_Line ("Usage: ia [options...] <file>");
+      TIO.Put_Line ("Usage: ldc [options...] <file>");
       TIO.Put_Line ("Options:");
       TIO.Put_Line ("    --help        Show help information");
    end Show_Help;
