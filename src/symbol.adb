@@ -6,20 +6,20 @@ package body Symbol is
       Symbol_Vector.Append (Table, Sym);
    end Push;
 
-   function Find (Kind : Symbol_Kind; Name : Ada.Strings.Unbounded.Unbounded_String) return Symbol is
+   function Find (Kind : Symbol_Kind; Name : Ada.Strings.Unbounded.Unbounded_String) return Symbol_Vector.Cursor is
       use type Symbol_Vector.Vector;
       use type SU.Unbounded_String;
    begin
-      for I in 1 .. Symbol_Vector.Length (Table) loop
+      for Position in Table.Iterate loop
          declare
-            Sym : Symbol := Table (Positive (I));
+            Sym : constant Symbol := Symbol_Vector.Element (Position);
          begin
             if Sym.Kind = Kind and Sym.Name = Name then
-               return Sym;
+               return Position;
             end if;
          end;
       end loop;
 
-      return (None, others => <>);
+      return Symbol_Vector.No_Element;
    end Find;
 end Symbol;
