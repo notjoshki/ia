@@ -48,6 +48,7 @@ package body Lexer is
          when '.' => return Step_And_Create_Token (Lex, Dot);
          when '(' => return Step_And_Create_Token (Lex, LParen);
          when ')' => return Step_And_Create_Token (Lex, RParen);
+         when '=' => return Step_And_Create_Token (Lex, Equal);
          when others =>
             Logger.Log (Logger.Critical, "Unknown token " & Lex.Current_Char'Img & "");
             Step (Lex);

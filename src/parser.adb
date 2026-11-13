@@ -25,6 +25,7 @@ package body Parser is
 
    procedure Parse_Program (Prs : in out Parser) is
       use type Symbol.Symbol_Kind;
+      use type Symbol.Symbol_Vector.Vector;
    begin
       while Prs.Token.Kind /= Lexer.EOF loop
          Parse (Prs);
@@ -32,7 +33,7 @@ package body Parser is
 
       if SU.Length (Prs.Entry_Section) = 0 then
          Logger.Log (Logger.Critical, "Missing ENTRY clause");
-      elsif Symbol.Find (Symbol.Section, Prs.Entry_Section).Kind = Symbol.None then
+      elsif not Symbol.Symbol_Vector.Has_Element (Symbol.Find (Symbol.Section, Prs.Entry_Section)) then
          Logger.Log (Logger.Critical, "No such section '" & SU.To_String (Prs.Entry_Section) & "' found in ENTRY clause");
       else
          SU.Append (Prs.Code, End_Code_Template);
@@ -100,12 +101,68 @@ package body Parser is
       Eat (Prs, Lexer.RBrace);
    end Parse_Block;
 
+   function Parse_Value (Prs : in out Parser) return SU.Unbounded_String is
+   begin
+      case Prs.Token.Kind is
+         when Lexer.ID => return Parse_Variable (Prs);
+         when Lexer.Int => return Parse_Int (Prs);
+         when others =>
+            Logger.Log (Logger.Critical, "Invalid value '" & Prs.Token.Kind'Img & "'");
+            return SU.To_Unbounded_String ("");
+      end case;
+   end Parse_Value;
+
+   function Parse_Variable(Prs : in out Parser) return SU.Unbounded_String is
+      Cursor : constant Symbol.Symbol_Vector.Cursor := Symbol.Find (Symbol.Variable, Prs.Token.Value);
+      Code : SU.Unbounded_String := SU.To_Unbounded_String ("_");
+   begin
+      if not Symbol.Symbol_Vector.Has_Element (Cursor) then
+         Logger.Log(Logger.Critical, "Undefined variable '" & SU.To_String (Prs.Token.Value) & "'");
+      else
+         SU.Append (Code, Prs.Token.Value);
+      end if;
+
+      Eat (Prs, Lexer.ID);
+      return Code;
+   end Parse_Variable;
+
+   function Parse_Int (Prs : in out Parser) return SU.Unbounded_String is
+      Str : SU.Unbounded_String := Prs.Token.Value;
+   begin
+      Eat (Prs, Lexer.Int);
+      return Str;
+   end Parse_Int;
+
    procedure Parse_ID (Prs : in out Parser) is
       Next : constant Lexer.Token := Peek (Prs, 1);
    begin
-      Logger.Log (Logger.Critical, "Undefined ID '" & SU.To_String (Prs.Token.Value) & "'");
-      Eat (Prs, Lexer.ID);
+      if Peek (Prs, 1).Kind = Lexer.Equal then
+         Parse_Assignment (Prs);
+      else
+         Logger.Log (Logger.Critical, "Undefined ID '" & SU.To_String (Prs.Token.Value) & "'");
+         Eat (Prs, Lexer.ID);
+      end if;
    end Parse_ID;
+
+   procedure Parse_Assignment (Prs : in out Parser) is
+      Name : constant SU.Unbounded_String := Prs.Token.Value;
+      Cursor : constant Symbol.Symbol_Vector.Cursor := Symbol.Find (Symbol.Variable, Name);
+   begin
+      Eat (Prs, Lexer.ID);
+      Eat (Prs, Lexer.Equal);
+
+      if not Symbol.Symbol_Vector.Has_Element (Cursor) then
+         if Prs.Parsing_Sections then
+            Logger.Log (Logger.Critical, "Declaring variable '" & SU.To_String (Name) & "' out of the global scope");
+         else
+            Symbol.Push ((Symbol.Variable, Prs.Token.Value));
+         end if;
+
+         SU.Append (Prs.Code, "double ");
+      end if;
+
+      SU.Append (Prs.Code, "_" & SU.To_String (Name) & " = " & SU.To_String (Parse_Value (Prs)) & ";" & Utilities.CRLF);
+   end Parse_Assignment;
 
    procedure Parse_Keyword (Prs : in out Parser) is
       function Cmp (LHS : SU.Unbounded_String; RHS : String) return Boolean

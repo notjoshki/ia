@@ -3,7 +3,7 @@ with Ada.Strings.Unbounded;
 with Ada.Characters.Handling;
 
 package Lexer is
-   type Token_Kind is (EOF, ID, Keyword, Int, Str, Colon, LBrace, RBrace, Semicolon, Dot, LParen, RParen);
+   type Token_Kind is (EOF, ID, Keyword, Int, Str, Colon, LBrace, RBrace, Semicolon, Dot, LParen, RParen, Equal);
 
    type Token is record
       Kind : Token_Kind;

@@ -38,7 +38,11 @@ private
    function Peek (Prs : Parser; Offset : Integer) return Lexer.Token;
    procedure Parse (Prs : in out Parser);
    procedure Parse_Block (Prs : in out Parser);
+   function Parse_Value (Prs : in out Parser) return SU.Unbounded_String;
+   function Parse_Variable(Prs : in out Parser) return SU.Unbounded_String;
+   function Parse_Int (Prs : in out Parser) return SU.Unbounded_String;
    procedure Parse_ID (Prs : in out Parser);
+   procedure Parse_Assignment (Prs : in out Parser);
    procedure Parse_Keyword (Prs : in out Parser);
    procedure Parse_Sections (Prs : in out Parser);
    procedure Parse_Section (Prs : in out Parser);
